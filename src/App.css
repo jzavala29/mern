@@ -1,0 +1,13 @@
+body.dark-mode {
+  background-color: #121212;
+  color: white;
+}
+
+body.high-contrast {
+  filter: contrast(200%);
+}
+
+body.large-text {
+  font-size: 1.25rem;
+}
+
