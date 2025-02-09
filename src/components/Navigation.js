@@ -15,16 +15,16 @@ export default class Navigation extends Component {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/">Ajuste de Preferencia</Link>
+                <Link className="nav-link" to="/">Accidentes</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/create">Crear Evento</Link>
+                <Link className="nav-link" to="/create">Obras</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/user">Crear Usuario</Link>
+                <Link className="nav-link" to="/user">Inspecciones</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/auspiciantes">Auspiciantes</Link>
+                <Link className="nav-link" to="/auspiciantes">Empresas</Link>
               </li>
             </ul>
           </div>
@@ -33,3 +33,7 @@ export default class Navigation extends Component {
     );
   }
 }
+
+
+ 
+

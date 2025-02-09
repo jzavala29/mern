@@ -1,109 +1,119 @@
 import React, { useState, useEffect } from 'react';
 
-const CreateUser = () => {
+const InspectionsManager = () => {
   const [nombre, setNombre] = useState('');
-  const [correo, setCorreo] = useState('');
+  const [fecha, setFecha] = useState('');
+  const [descripcion, setDescripcion] = useState('');
   const [mensaje, setMensaje] = useState('');
-  const [usuarios, setUsuarios] = useState([]);
+  const [inspecciones, setInspecciones] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
 
-  // Cargar usuarios guardados
   useEffect(() => {
-    const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios')) || [];
-    setUsuarios(usuariosGuardados);
+    const inspeccionesGuardadas = JSON.parse(localStorage.getItem('inspecciones')) || [];
+    setInspecciones(inspeccionesGuardadas);
   }, []);
 
-  // Guardar usuarios en localStorage
-  const guardarUsuarios = (usuarios) => {
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+  const guardarInspecciones = (inspecciones) => {
+    localStorage.setItem('inspecciones', JSON.stringify(inspecciones));
   };
 
-  // Manejo del envío del formulario
+  const mostrarMensaje = (texto) => {
+    setMensaje(texto);
+    setTimeout(() => setMensaje(''), 3000);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (nombre && correo) {
-      let nuevosUsuarios;
-      if (editIndex !== null) {
-        // Editar usuario existente
-        nuevosUsuarios = usuarios.map((user, index) =>
-          index === editIndex ? { nombre, correo } : user
-        );
-        setEditIndex(null);
-      } else {
-        // Agregar nuevo usuario
-        nuevosUsuarios = [...usuarios, { nombre, correo }];
-      }
-      setUsuarios(nuevosUsuarios);
-      guardarUsuarios(nuevosUsuarios);
-      setNombre('');
-      setCorreo('');
-      setMensaje('Usuario guardado con éxito');
-    } else {
-      setMensaje('Por favor complete todos los campos');
+    if (!nombre.trim() || !fecha.trim() || !descripcion.trim()) {
+      mostrarMensaje('❌ Por favor complete todos los campos correctamente.');
+      return;
     }
+    
+    let nuevasInspecciones;
+    if (editIndex !== null) {
+      if (!window.confirm('¿Estás seguro de que quieres modificar esta inspección?')) return;
+      nuevasInspecciones = inspecciones.map((insp, index) =>
+        index === editIndex ? { nombre, fecha, descripcion } : insp
+      );
+      setEditIndex(null);
+    } else {
+      nuevasInspecciones = [...inspecciones, { nombre, fecha, descripcion }];
+    }
+    setInspecciones(nuevasInspecciones);
+    guardarInspecciones(nuevasInspecciones);
+    setNombre('');
+    setFecha('');
+    setDescripcion('');
+    mostrarMensaje('✅ Inspección guardada con éxito.');
   };
 
-  // Eliminar usuario
-  const eliminarUsuario = (index) => {
-    const nuevosUsuarios = usuarios.filter((_, i) => i !== index);
-    setUsuarios(nuevosUsuarios);
-    guardarUsuarios(nuevosUsuarios);
+  const eliminarInspeccion = (index) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar esta inspección?')) return;
+    const nuevasInspecciones = inspecciones.filter((_, i) => i !== index);
+    setInspecciones(nuevasInspecciones);
+    guardarInspecciones(nuevasInspecciones);
+    mostrarMensaje('✅ Inspección eliminada con éxito.');
   };
 
-  // Cargar usuario para edición
-  const editarUsuario = (index) => {
-    setNombre(usuarios[index].nombre);
-    setCorreo(usuarios[index].correo);
+  const editarInspeccion = (index) => {
+    setNombre(inspecciones[index].nombre);
+    setFecha(inspecciones[index].fecha);
+    setDescripcion(inspecciones[index].descripcion);
     setEditIndex(index);
   };
 
   return (
     <div className="container">
-      <h2 className="text-center my-4">Gestión de Usuarios</h2>
+      <h2 className="text-center my-4">Gestión de Inspecciones</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">Nombre</label>
+          <label className="form-label">Nombre de la Inspección</label>
           <input
             type="text"
             className="form-control"
-            id="nombre"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="correo" className="form-label">Correo Electrónico</label>
+          <label className="form-label">Fecha</label>
           <input
-            type="email"
+            type="date"
             className="form-control"
-            id="correo"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Descripción</label>
+          <textarea
+            className="form-control"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
             required
           />
         </div>
         <button type="submit" className="btn btn-primary">
-          {editIndex !== null ? 'Actualizar Usuario' : 'Crear Usuario'}
+          {editIndex !== null ? 'Actualizar Inspección' : 'Crear Inspección'}
         </button>
       </form>
-      {/* Mensaje de éxito o error */}
       {mensaje && <div className="alert alert-info mt-3">{mensaje}</div>}
-      {/* Lista de usuarios guardados */}
       <div className="mt-4">
-        <h3>Usuarios Guardados</h3>
-        {usuarios.length > 0 ? (
+        <h3>Inspecciones Guardadas</h3>
+        {inspecciones.length > 0 ? (
           <ul className="list-group">
-            {usuarios.map((user, index) => (
+            {inspecciones.map((insp, index) => (
               <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
                 <span>
-                  <strong>{user.nombre}</strong> - {user.correo}
+                  <strong>{insp.nombre}</strong> - {insp.fecha} <br /> {insp.descripcion}
                 </span>
                 <div>
-                  <button className="btn btn-warning btn-sm me-2" onClick={() => editarUsuario(index)}>
+                  <button className="btn btn-warning btn-sm me-2" onClick={() => editarInspeccion(index)}>
                     Editar
                   </button>
-                  <button className="btn btn-danger btn-sm" onClick={() => eliminarUsuario(index)}>
+                  <button className="btn btn-danger btn-sm" onClick={() => eliminarInspeccion(index)}>
                     Eliminar
                   </button>
                 </div>
@@ -111,11 +121,11 @@ const CreateUser = () => {
             ))}
           </ul>
         ) : (
-          <p>No hay usuarios guardados.</p>
+          <p>No hay inspecciones guardadas.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default CreateUser;
+export default InspectionsManager;
